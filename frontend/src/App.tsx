@@ -1,9 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import "./App.css";
+import { useQuery, gql } from "@apollo/client";
+
+type Query = {
+  title: string;
+  author: string;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const GET_BOOKS = gql`
+    query GetBooks {
+      books {
+        title
+        author
+      }
+    }
+  `;
+  const { loading, error, data } = useQuery(GET_BOOKS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error : {error.message}</p>;
 
   return (
     <div className="App">
@@ -16,6 +34,19 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+
+      {data.books.map(({ title, author }: Query) => (
+        <>
+          <br />
+          <div>title</div>
+          <span>{title}</span>
+          <br />
+          <div>author</div>
+          <span>{author}</span>
+          <br />
+        </>
+      ))}
+
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -28,7 +59,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
